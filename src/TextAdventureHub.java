@@ -226,4 +226,18 @@ public class TextAdventureHub {
         App.startMountainBattle(player);
         System.out.println("Back to the Village. For now.");
     }
+
+        private static void showArt(int n) {
+        String path = "/resources/art/art" + n + ".txt";
+        System.out.println(readResourceText(path));
+    }
+
+    private static String readResourceText(String path) {
+            try (var in = TextAdventureHub.class.getResourceAsStream(path)) {
+            if (in == null) return "Missing resource: " + path;
+            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return "Failed to read " + path + "\n" + e;
+        }
+    }
 }

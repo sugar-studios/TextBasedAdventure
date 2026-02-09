@@ -106,7 +106,6 @@ public class BattleManager {
         startCombat(player, enemyList, grid, renderer, this.battleDifficulty);
     }
 
-    // scanner-sharing overloads
     public void createScriptedBattle(
         PlayerClass player,
         ArrayList<Enemy> enemies,
@@ -129,8 +128,6 @@ public class BattleManager {
     }
 
     private void startCombat(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid, Renderer renderer, int difficulty) {
-
-        // FIX: do NOT overwrite the shared scanner
         if (scnr == null) scnr = new Scanner(System.in);
 
         battleOver = false;
@@ -156,8 +153,9 @@ public class BattleManager {
 
                 if (!player.isAlive()) {
                     System.out.println(player.getName() + " has been defeated!");
-                    battleOver = true;
-                    break;
+                        battleOver = true;
+                        App.defeat(player);
+                        return;
                 }
             }
 
@@ -173,10 +171,13 @@ public class BattleManager {
             if (!player.isAlive()) {
                 System.out.println(player.getName() + " has been defeated!");
                 battleOver = true;
+                App.defeat(player);
                 return;
             }
             if (allEnemiesDead(enemyList)) {
                 onBattleWon(player, difficulty);
+                Audio.stopMusic();
+                Audio.playMusicLoop("victory.wav", -12f);
                 battleOver = true;
                 return;
             }
@@ -827,6 +828,9 @@ public class BattleManager {
 
         if (!player.isAlive()) {
             System.out.println(player.getName() + " died while fleeing.");
+            battleOver = true;
+            App.defeat(player);
+            return;
         }
 
         battleOver = true;
@@ -838,7 +842,6 @@ public class BattleManager {
         if (g > 0) {
             player.setGold(player.getGold() + g);
             System.out.println("Gained " + g + " gold from " + dead.getName() + ".");
-            // BANK TRACKER HOOK (eligible combat earnings)
             if (player.getBank() != null) {
                 player.getBank().onGoldEarned(g, Bank.EarnSource.COMBAT_REWARD);
             }
@@ -861,7 +864,6 @@ public class BattleManager {
         if (reward > 0) {
             player.setGold(player.getGold() + reward);
             System.out.println("Map clear reward: +" + reward + " gold.");
-            // BANK TRACKER HOOK (eligible combat earnings)
             if (player.getBank() != null) {
                 player.getBank().onGoldEarned(reward, Bank.EarnSource.COMBAT_REWARD);
             }
@@ -877,7 +879,12 @@ public class BattleManager {
         System.out.println(String.format("Turn %d; %s's turn!", turnCount, enemy.getName()));
 
         if (!enemy.isAlive()) return;
-        if (!player.isAlive()) { battleOver = true; return; }
+        if (!player.isAlive()) { 
+                System.out.println(player.getName() + " has been defeated!");
+                battleOver = true;
+                App.defeat(player);
+                return; 
+        }
 
         if (isInRange(grid, enemy, player, enemy.getRange())) {
             System.out.println(enemy.getName() + " attacks!");
@@ -885,14 +892,24 @@ public class BattleManager {
             if (enemy instanceof Dragon d) d.takeBossTurn(player, grid);
             else enemy.attackWithCrit(player);
 
-            if (!player.isAlive()) battleOver = true;
+            if (!player.isAlive()) { 
+                System.out.println(player.getName() + " has been defeated!");
+                battleOver = true;
+                App.defeat(player);
+                return; 
+            }   
             return;
         }
 
         moveEnemyTowardPlayer(enemy, player, grid);
 
         if (!enemy.isAlive()) return;
-        if (!player.isAlive()) { battleOver = true; return; }
+        if (!player.isAlive()) { 
+                System.out.println(player.getName() + " has been defeated!");
+                battleOver = true;
+                App.defeat(player);
+                return; 
+        }   
 
         if (isInRange(grid, enemy, player, enemy.getRange())) {
             System.out.println(enemy.getName() + " attacks!");
@@ -900,7 +917,12 @@ public class BattleManager {
             if (enemy instanceof Dragon d) d.takeBossTurn(player, grid);
             else enemy.attackWithCrit(player);
 
-            if (!player.isAlive()) battleOver = true;
+            if (!player.isAlive()) { 
+                System.out.println(player.getName() + " has been defeated!");
+                battleOver = true;
+                App.defeat(player);
+                return; 
+            }   
         }
     }
 

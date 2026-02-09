@@ -1,19 +1,156 @@
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
 public class App {
     public static PlayerClass player;
-    public static Scanner in; // shared scanner
+    public static Scanner in;
     private static final boolean FORCE_SADAKO = true;
     private static final Random RNG = new Random();
 
+    // This code here was made by AI
+    public static class RestartGameException extends RuntimeException { }
+    public static class QuitGameException extends RuntimeException { }
+    //End of AI Code
+
     public static void main(String[] args) {
         System.setProperty("file.encoding", "UTF-8");
-        player = new Sorcerer("Player");
+
         in = new Scanner(System.in);
+
+        // This code here was made by AI
+        while (true) {
+            try {
+                runGameOnce();
+                // If runGameOnce returns normally, game ended without death-restart.
+                break;
+            } catch (RestartGameException ex) {
+                // Player chose to play again after dying
+                System.out.println("\n--- Restarting game ---\n");
+            } catch (QuitGameException ex) {
+                break;
+            }
+        }
+        //End of AI Code
+    }
+
+    private static void runGameOnce() {
+        player = null;
+
+        System.out.println("Do you want audio in this project? y/n");
+        switch (in.next().toLowerCase().charAt(0)) {
+            case 'y':
+                Audio.setMuted(false);
+                break;
+            default:
+                Audio.setMuted(true);
+                break;
+        }
+
+        Audio.stopMusic();
+        Audio.playMusicLoop("title.wav", -12.0f);
+
+        boolean classChosen = false;
+        while (!classChosen) {
+            System.out.println("Pick a class: ");
+            System.out.println("[1] Fighter - a mobile skirmisher");
+            System.out.println("[2] Soldier - a stalwart menace");
+            System.out.println("[3] Ranger - never too many arrows");
+            System.out.println("[4] Sorcerer - blow them up with your mind");
+            System.out.println("[5] peasant");
+
+            switch (in.next().toLowerCase().charAt(0)) {
+                case '1' -> { player = new Fighter("Player"); classChosen = true; }
+                case '2' -> { player = new Soldier("Player"); classChosen = true; }
+                case '3' -> { player = new Ranger("Player"); classChosen = true; }
+                case '4' -> { player = new Sorcerer("Player"); classChosen = true; }
+                case '5' -> { player = new PlayerClass("Player"); classChosen = true; }
+                default -> System.out.println("Invalid Input");
+            }
+        }
+
+        System.out.println("Choose your name: ");
+        player.setName(in.next());
+        in.nextLine(); 
+
         TextAdventureHub.villageLoop(player, in);
-        in.close();
+    }
+
+    public static void defeat(PlayerClass p) {
+        Audio.stopMusic();
+
+        System.out.println("\n========================================");
+        System.out.println("              YOU DIED");
+        System.out.println("========================================");
+
+        String name = (p == null) ? "Unknown" : p.getName();
+        System.out.println("Name: " + name);
+
+        if (p != null) {
+            System.out.println("Health: " + String.format("%.0f", p.getHealth()));
+            System.out.println("AC: " + p.getArmourClass());
+            System.out.println("Mana: " + p.getMana());
+
+            System.out.println("\n--- Wealth ---");
+            System.out.println("Gold: " + p.getGold());
+
+            System.out.println("\n--- Debts ---");
+            System.out.println("Casino debt: " + p.getCasinoDebt());
+
+            try {
+                if (p.getBankState() != null) {
+                    System.out.println("Bank status: " + (p.getBankState().hasActiveLoan ? String.format("Loan pending, %d", p.getBankState().activeRepayAmount) : "No Loan"));
+                }
+            } catch (Exception ignored) { }
+
+            System.out.println("\n--- Inventory ---");
+
+            Map<Consumable, Integer> cons = p.getConsumableInventoryView();
+            if (cons.isEmpty()) System.out.println("Consumables: (none)");
+            else {
+                System.out.println("Consumables:");
+                for (Map.Entry<Consumable, Integer> e : cons.entrySet()) {
+                    System.out.println(" - " + e.getKey().getName() + " x" + e.getValue());
+                }
+            }
+
+            Map<Ammo, Integer> ammo = p.getAmmoInventoryView();
+            if (ammo.isEmpty()) System.out.println("Ammo: (none)");
+            else {
+                System.out.println("Ammo:");
+                for (Map.Entry<Ammo, Integer> e : ammo.entrySet()) {
+                    System.out.println(" - " + e.getKey().getName() + " x" + e.getValue());
+                }
+            }
+
+            if (p.getWeaponInventory() == null || p.getWeaponInventory().isEmpty()) {
+                System.out.println("Weapons: (none)");
+            } else {
+                System.out.println("Weapons (Equipped: " + p.getEquippedWeaponName() + "):");
+                for (Weapon w : p.getWeaponInventory()) {
+                    System.out.println(" - " + w.getName() + " (DMG+" + w.getDmgBonus() + ", DUR " + String.format("%.0f", w.durability) + ")");
+                }
+            }
+        }
+
+        System.out.println("========================================\n");
+
+        // This code here was made by AI
+        while (true) {
+            Audio.stopMusic();
+            Audio.playMusicLoop("gameOver.wav", -12.0f);
+            System.out.println("Play again? (y/n)");
+            String ans = in.nextLine().trim().toLowerCase();
+            if (ans.isEmpty()) continue;
+
+            char c = ans.charAt(0);
+            if (c == 'y') throw new RestartGameException();
+            if (c == 'n') throw new QuitGameException();
+
+            System.out.println("Invalid Input");
+        }
+        //End of AI Code
     }
 
     private static Enemy E(String name, double hp, int str, int dex, int chr, 
@@ -52,6 +189,8 @@ public class App {
                 grid = new BattleGrid(8, 8);
                 wallDensity = 2;
                 difficulty = 3;
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatB.wav", -12.0f);
                 eL.add(E("Goblin1", 5, 2, 2, 2, 7, 1, 2, 5, 1, 12, '1'));
                 eL.add(E("Goblin2", 5, 2, 2, 2, 7, 1, 2, 5, 1, 12, '2'));
                 eL.add(E("Goblin3", 5, 2, 2, 2, 7, 1, 2, 5, 1, 12, '3'));
@@ -61,132 +200,164 @@ public class App {
                 grid = new BattleGrid(8, 8);
                 wallDensity = 10;
                 difficulty = 3;
-                eL.add(E("Scout", 6, 2, 4, 1, 8, 1, 3, 4, 1, 12, 'S'));
-                eL.add(E("Goblin", 5, 2, 2, 2, 7, 1, 2, 5, 1, 12, 'G'));
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatB.wav", -12.0f);
+                eL.add(E("Scout", 6, 2, 4, 1, 8, 1, 3, 4, 1, 12, '1'));
+                eL.add(E("Goblin", 5, 2, 2, 2, 7, 1, 2, 5, 1, 12, '2'));
             }
             
             case 3 -> {
                 grid = new BattleGrid(9, 9);
                 wallDensity = 15;
                 difficulty = 5;
-                eL.add(E("Archer", 6, 1, 4, 1, 7, 1, 2, 4, 3, 12, 'A'));
-                eL.add(E("Archer2", 6, 1, 4, 1, 7, 1, 2, 4, 3, 12, 'B'));
-                eL.add(E("Guard", 9, 4, 2, 1, 9, 3, 2, 6, 1, 12, 'H'));
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatB.wav", -12.0f);
+                eL.add(E("Archer", 6, 1, 4, 1, 7, 1, 2, 4, 3, 12, '1'));
+                eL.add(E("Archer2", 6, 1, 4, 1, 7, 1, 2, 4, 3, 12, '2'));
+                eL.add(E("Guard", 9, 4, 2, 1, 9, 3, 2, 6, 1, 12, '3'));
             }
             
             case 4 -> {
                 grid = new BattleGrid(7, 7);
                 wallDensity = 5;
                 difficulty = 2;
-                eL.add(E("Brute", 14, 6, 1, 1, 9, 3, 2, 7, 1, 12, 'R'));
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatB.wav", -12.0f);
+                eL.add(E("Brute", 14, 6, 1, 1, 9, 3, 2, 7, 1, 12, '1'));
             }
             
             case 5 -> {
                 grid = new BattleGrid(10, 8);
                 wallDensity = 20;
                 difficulty = 7;
-                eL.add(E("Sneak", 7, 2, 5, 1, 8, 2, 4, 4, 1, 12, 'N'));
-                eL.add(E("Sneak2", 7, 2, 5, 1, 8, 2, 4, 4, 1, 12, 'M'));
-                eL.add(E("Shaman", 8, 1, 2, 6, 7, 3, 2, 5, 2, 13, 'W'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Sneak", 7, 2, 5, 1, 8, 2, 4, 4, 1, 12, '1'));
+                eL.add(E("Sneak2", 7, 2, 5, 1, 8, 2, 4, 4, 1, 12, '2'));
+                eL.add(E("Shaman", 8, 1, 2, 6, 7, 3, 2, 5, 2, 13, '3'));
             }
             
             case 6 -> {
                 grid = new BattleGrid(8, 10);
                 wallDensity = 25;
                 difficulty = 2;
-                eL.add(E("Pikeman", 10, 4, 2, 1, 9, 2, 2, 6, 2, 12, 'P'));
-                eL.add(E("Pikeman2", 10, 4, 2, 1, 9, 2, 2, 6, 2, 12, 'Q'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Pikeman", 10, 4, 2, 1, 9, 2, 2, 6, 2, 12, '1'));
+                eL.add(E("Pikeman2", 10, 4, 2, 1, 9, 2, 2, 6, 2, 12, '2'));
             }
             
             case 7 -> {
                 grid = new BattleGrid(9, 7);
                 wallDensity = 10;
                 difficulty = 1;
-                eL.add(E("Wolf", 8, 4, 4, 1, 8, 1, 4, 5, 1, 12, 'W'));
-                eL.add(E("Wolf2", 8, 4, 4, 1, 8, 1, 4, 5, 1, 12, 'V'));
-                eL.add(E("Wolf3", 8, 4, 4, 1, 8, 1, 4, 5, 1, 12, 'U'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Wolf", 8, 4, 4, 1, 8, 1, 4, 5, 1, 12, '1'));
+                eL.add(E("Wolf2", 8, 4, 4, 1, 8, 1, 4, 5, 1, 12, '2'));
+                eL.add(E("Wolf3", 8, 4, 4, 1, 8, 1, 4, 5, 1, 12, '3'));
             }
             
             case 8 -> {
                 grid = new BattleGrid(10, 10);
                 wallDensity = 30;
                 difficulty = 3;
-                eL.add(E("Captain", 16, 6, 3, 2, 10, 3, 2, 7, 1, 13, 'C'));
-                eL.add(E("Archer", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, 'A'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Captain", 16, 6, 3, 2, 10, 3, 2, 7, 1, 13, '1'));
+                eL.add(E("Archer", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, '2'));
             }
             
             case 9 -> {
                 grid = new BattleGrid(8, 8);
                 wallDensity = 0;
                 difficulty = 2;
-                eL.add(E("Duelist", 12, 4, 5, 2, 10, 3, 3, 6, 1, 12, 'D'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Duelist", 12, 4, 5, 2, 10, 3, 3, 6, 1, 12, '3'));
             }
             
             case 10 -> {
                 grid = new BattleGrid(9, 9);
                 wallDensity = 35;
                 difficulty = 5;
-                eL.add(E("Wall-Crawler", 9, 3, 6, 1, 9, 2, 4, 5, 1, 12, 'K'));
-                eL.add(E("Wall-Crawler2", 9, 3, 6, 1, 9, 2, 4, 5, 1, 12, 'L'));
-                eL.add(E("Brute", 14, 6, 1, 1, 9, 3, 2, 7, 1, 12, 'R'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Wall-Crawler", 9, 3, 6, 1, 9, 2, 4, 5, 1, 12, '1'));
+                eL.add(E("Wall-Crawler2", 9, 3, 6, 1, 9, 2, 4, 5, 1, 12, '2'));
+                eL.add(E("Brute", 14, 6, 1, 1, 9, 3, 2, 7, 1, 12, '3'));
             }
             
             case 11 -> {
                 grid = new BattleGrid(7, 10);
                 wallDensity = 12;
                 difficulty = 5;
-                eL.add(E("Skirmisher", 10, 4, 4, 2, 9, 2, 3, 5, 2, 12, 'S'));
-                eL.add(E("Archer", 6, 1, 4, 1, 7, 2, 2, 4, 3, 12, 'A'));
-                eL.add(E("Archer2", 6, 1, 4, 1, 7, 2, 2, 4, 3, 12, 'B'));
+                Audio.stopMusic();
+                Audio.playMusicLoop(Math.random() < 0.5 ? "combatA.wav" : "combatD.wav", -12.0f);
+                eL.add(E("Skirmisher", 10, 4, 4, 2, 9, 2, 3, 5, 2, 12, '1'));
+                eL.add(E("Archer", 6, 1, 4, 1, 7, 2, 2, 4, 3, 12, '2'));
+                eL.add(E("Archer2", 6, 1, 4, 1, 7, 2, 2, 4, 3, 12, '3'));
             }
             
             case 12 -> {
                 grid = new BattleGrid(10, 7);
                 wallDensity = 18;
                 difficulty = 5;
-                eL.add(E("Shaman", 10, 1, 2, 7, 8, 3, 2, 6, 2, 13, 'Z'));
-                eL.add(E("Guard", 11, 5, 2, 1, 10, 2, 2, 6, 1, 12, 'G'));
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatC1.wav", -12.0f);
+                eL.add(E("Shaman", 10, 1, 2, 7, 8, 3, 2, 6, 2, 13, '1'));
+                eL.add(E("Guard", 11, 5, 2, 1, 10, 2, 2, 6, 1, 12, '2'));
             }
             
             case 13 -> {
                 grid = new BattleGrid(8, 9);
                 wallDensity = 22;
-                difficulty = 5;
-                eL.add(E("Twin Blades", 11, 4, 6, 1, 10, 2, 3, 6, 1, 12, 'T'));
-                eL.add(E("Twin Blades2", 11, 4, 6, 1, 10, 2, 3, 6, 1, 12, 'Y'));
+                difficulty = 10;
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatC1.wav", -12.0f);
+                eL.add(E("Twin Blades", 20, 4, 6, 1, 10, 2, 3, 6, 1, 12, '1'));
+                eL.add(E("Twin Blades2", 20, 4, 6, 1, 10, 2, 3, 6, 1, 12, '2'));
             }
             
             case 14 -> {
                 grid = new BattleGrid(9, 8);
                 wallDensity = 28;
                 difficulty = 5;
-                eL.add(E("Raider", 13, 6, 3, 1, 10, 1, 3, 7, 1, 12, 'R'));
-                eL.add(E("Raider2", 13, 6, 3, 1, 10, 1, 3, 7, 1, 12, 'S'));
-                eL.add(E("Archer", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, 'A'));
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatC1.wav", -12.0f);
+                eL.add(E("Raider", 13, 6, 3, 1, 10, 1, 3, 7, 1, 12, '1'));
+                eL.add(E("Raider2", 13, 6, 3, 1, 10, 1, 3, 7, 1, 12, '2'));
+                eL.add(E("Archer", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, '3'));
             }
             
             case 15 -> {
                 grid = new BattleGrid(10, 10);
                 wallDensity = 40;
-                difficulty = 10;
-                eL.add(E("Warlord", 20, 8, 3, 2, 12, 3, 2, 8, 1, 13, 'W'));
-                eL.add(E("Archer", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, 'A'));
-                eL.add(E("Archer2", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, 'B'));
+                difficulty = 15;
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatC1.wav", -12.0f);
+                eL.add(E("Warlord", 30, 8, 3, 2, 12, 3, 2, 8, 1, 13, '1'));
+                eL.add(E("Archer", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, '2'));
+                eL.add(E("Archer2", 7, 1, 4, 1, 7, 1, 2, 4, 3, 12, '3'));
             }
             
-            // Mythic 1 (ultra hard) - actual battle
+            // Mythic 1
             case 16 -> {
                 grid = new BattleGrid(10, 10);
                 wallDensity = 45;
                 difficulty = 60;
-                eL.add(E("Mythic Champion", 100, 10, 5, 3, 10, 0, 2, 9, 1, 14, 'M'));
+                Audio.stopMusic();
+                Audio.playMusicLoop("combatC2.wav", -12.0f);
+                eL.add(E("Mythic Champion", 100, 10, 5, 3, 10, 0, 2, 9, 1, 14, '1'));
             }
             
-            // Mythic 2 (ultra hard) - Sadako event (NOT a battle)
+            // Mythic 2
             case 17 -> {
                 grid = new BattleGrid(1, 1);
                 wallDensity = 0;
                 difficulty = 0;
+                Audio.stopMusic();
+                Audio.playMusicLoop("cursed.wav", -12.0f);
                 SadakoBattle.run(player, in);
                 if (player.isAlive()) player.setGold(player.getGold() + 50);
                 return;
@@ -196,7 +367,6 @@ public class App {
         }
 
         renderer = new Renderer(grid);
-        Audio.playMusicLoop("combatC1.wav", -12.0f);
         System.out.println("Forest encounter " + encounter + "/15");
         
         // IMPORTANT: use scanner-sharing overload
@@ -224,7 +394,7 @@ public class App {
         int playerX = 0, playerY = 3;
         int dragonX = 3, dragonY = 3;
         
-        Audio.playMusicLoop("combatC1.wav", -8.0f);
+        Audio.playMusicLoop("combatF.wav", -8.0f);
         bM.createScriptedBattle(player, eL, grid, renderer, 80, 
                                playerX, playerY, dragonX, dragonY, walls, in);
         

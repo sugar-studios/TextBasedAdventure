@@ -21,6 +21,7 @@ public abstract class Entity {
     public void setHealth(double health) { this.health = health; }
 
     public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     public int getArmourClass() { return armourClass; }
     public void setArmourClass(int armourClass) { this.armourClass = armourClass; }

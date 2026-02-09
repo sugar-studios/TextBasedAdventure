@@ -6,13 +6,26 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
-// Made with help from AI
+// Entire file made with help from AI
 
 public final class Audio {
+
     private static Clip musicClip;
+    private static boolean isMuted = false;
 
     private Audio() {}
+
+    public static void setMuted(boolean muted) {
+        isMuted = muted;
+
+        if (isMuted) {
+            stopMusic();
+        }
+    }
+
+    public static boolean isMuted() {
+        return isMuted;
+    }
 
     private static Clip loadClip(String absoluteResourcePath) {
         try (InputStream raw = Audio.class.getResourceAsStream(absoluteResourcePath)) {
@@ -62,22 +75,20 @@ public final class Audio {
 
     // -------- Music --------
     public static void playMusicLoop(String fileName, float volumeDb) {
+        if (isMuted) return;
+
         stopMusic();
 
         String f = wavName(fileName);
 
-        // Build: src/resources/audio/music/<name>.wav
-        Path p = Paths.get( "src",  "resources", "audio", "music", f);
+        Path p = Paths.get("src", "resources", "audio", "music", f);
         String fullPath = p.toString();
-
-        System.out.println("Loading music from: " + fullPath);
 
         musicClip = loadClipFile(fullPath);
         setVolume(musicClip, volumeDb);
         musicClip.loop(Clip.LOOP_CONTINUOUSLY);
         musicClip.start();
     }
-
 
     public static void stopMusic() {
         if (musicClip != null) {
@@ -93,6 +104,8 @@ public final class Audio {
 
     // -------- SFX --------
     public static void playSfx(String fileName, float volumeDb) {
+        if (isMuted) return;
+
         String path = "src/resources/audio/sfx/" + fileName;
 
         final Clip sfxClip = loadClip(path);
