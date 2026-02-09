@@ -12,7 +12,7 @@ public final class SadakoBattle {
 
     private static final class Puzzle {
         final String prompt;
-        final String answer; // lowercase
+        final String answer;
         Puzzle(String prompt, String answer) {
             this.prompt = prompt;
             this.answer = answer;
@@ -22,64 +22,71 @@ public final class SadakoBattle {
     private static final Random RNG = new Random();
 
     private static final List<Puzzle> PUZZLES = List.of(
-            new Puzzle(
-                    "うN   うPPふる   FEふふ   F _ _ _   THる   TRるる\n" +
-                    "\n" +
-                    "る = E\n" +
-                    "ぷ = L\n" +
-                    "\n" +
-                    "What is F _ _ _ ?\n",
-                    "fell"
-            ),
-            new Puzzle(
-                    "TこE   FLののDくひTES   OF   Rひく_   SこひLL   のPEN   ひくひIN\n" +
-                    "\n" +
-                    "こ = H\n" +
-                    "\n" +
-                    "What is Rえく_ ?\n",
-                    "rich"
-            ),
-            new Puzzle(
-                    "つHE   かつ_ _む   IS   くOむING,   らEE   つHE   くLOUDら\n" +
-                    "\n" +
-                    "て = T\n" +
-                    "\n" +
-                    "What is かつ _ _ む?\n",
-                    "storm"
-            ),
-            new Puzzle(
-                    "THち   UNちVN   Nあ _ L    GちTS   HあMMちRちD   OUT\n" +
-                    "\n" +
-                    "み = N\n" +
-                    "\n" +
-                    "What is Nあ _  L?\n",
-                    "nail"
-            ),
-            new Puzzle(
-                    "CとT   くとT   YくとR   く_ N   TくNGとE,   つND   SWつLLくW\n" +
-                    "\n" +
-                    "A = つ\n" +
-                    "\n" +
-                    "What is く_ N?\n",
-                    "can"
-            ),
-            new Puzzle(
-                    "PLこカ   Bカ   THも   _ _ もこN   WこVもS,   MONSTもRS   Bも   カOUR   GRこVも\n" +
-                    "\n" +
-                    "カ = Y\n" +
-                    "\n" +
-                    "What is _ _ もこN?\n",
-                    "upon"
-            ),
-            new Puzzle(
-                    "ちNO   VIてつO,   もつVつN   てAYも   Lつ _ _\n" +
-                    "\n" +
-                    "て = D\n" +
-                    "\n" +
-                    "What is Lつ _ _ ?\n",
-                    "led"
-            )
+        new Puzzle(
+                "うN   うPPふる   FEふふ   'FR_ _'   THる   TRるる\n" +
+                "\n" +
+                "る = E\n" +
+                "ぷ = L\n" +
+                "\n" +
+                "What word is FR_ _ ?\n",
+                "from"
+        ),
+        new Puzzle(
+                "TこE   FLののDくひTES   OF   '_ひくE'   SこひLL   のPEN   ひくひIN\n" +
+                "\n" +
+                "こ = H\n" +
+                "\n" +
+                "What word is _えくE?\n",
+                "rage"
+        ),
+        new Puzzle(
+                "つHE   'らつO_む'   IS   くOむING,   らEE   つHE   くLOUDら\n" +
+                "\n" +
+                "て = T\n" +
+                "\n" +
+                "What word is らつO_む?\n",
+                "storm"
+        ),
+        new Puzzle(
+                "THち   UNちVN   'Nあ_ _'    GちTS   HあMMちRちD   OUT\n" +
+                "\n" +
+                "み = N\n" +
+                "\n" +
+                "What word is Nあ_  _?\n",
+                "nail"
+        ),
+        new Puzzle(
+                "CとT   くとT   'Yくと_ '  くW N   TくNGとE,   つND   SWつLLくW\n" +
+                "\n" +
+                "A = つ\n" +
+                "\n" +
+                "What word is Yくと_ ?\n",
+                "your"
+        ),
+        new Puzzle(
+                "PLこカ   Bカ   THも   'O_もこN'   WこVもS,   MONSTもRS   Bも   カOUR   GRこVも\n" +
+                "\n" +
+                "カ = Y\n" +
+                "\n" +
+                "What word is O_もこN?\n",
+                "ocean"
+        ),
+        new Puzzle(
+                "ちNO   VIてつO,   もつVつN   てAYも   '_つF_'\n" +
+                "\n" +
+                "て = D\n" +
+                "\n" +
+                "What word is Lつ _ _?\n",
+                "led"
+        ),
+        new Puzzle(
+            "THめ DめLUDGめ OF 'Fめ_ _'" +
+            "\n" +
+            "What word is 'Fめ_ _'?\n",
+            "fear"
+        )
     );
+
     public static boolean run(PlayerClass player, Scanner in) {
         System.out.println();
         System.out.println("You push deeper into the woods.");
