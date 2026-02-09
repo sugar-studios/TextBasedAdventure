@@ -1,3 +1,7 @@
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -9,6 +13,8 @@ public class TextAdventureHub {
         System.out.println("Type what you want to do. If you get lost, type 'help'.");
 
         while (true) {
+            Audio.stopMusic();
+            Audio.playMusicLoop("main.wav", -12.0f);
             System.out.println();
             System.out.println("=== VILLAGE HUB ===");
             System.out.println("Options: casino, bank, shop, armory, forest, mountain, status, help, quit");
@@ -70,6 +76,10 @@ public class TextAdventureHub {
     // ---------------- Casino ----------------
 
     private static void casinoLoop(PlayerClass player, Scanner in) {
+        Audio.stopMusic();
+        Audio.playMusicLoop("shopCasino.wav", -12.0f);
+        showArt(2);
+        System.out.println();
         System.out.println();
         System.out.println("You enter the Casino.");
         System.out.println("A bunny-suited hostess leans in a drink in a tray outstretched.");
@@ -104,6 +114,10 @@ public class TextAdventureHub {
     // ---------------- Shop ----------------
 
     private static void shopLoop(PlayerClass player, Scanner in) {
+        Audio.stopMusic();
+        Audio.playMusicLoop("shopGeneral.wav", -12.0f);
+        showArt(4);
+        System.out.println();
         System.out.println();
         System.out.println("You enter the Shop.");
         System.out.println("A witch-hatted shopkeeper nods her head at you");
@@ -135,6 +149,10 @@ public class TextAdventureHub {
     // ---------------- Armory ----------------
 
     private static void armoryLoop(PlayerClass player, Scanner in) {
+        Audio.stopMusic();
+        Audio.playMusicLoop("shopBlack.wav", -12.0f);
+        showArt(1);
+        System.out.println();
         System.out.println();
         System.out.println("You enter the Armory.");
         System.out.println("An eyepatched 'general' assesses you like you're badly supplied.");
@@ -166,6 +184,10 @@ public class TextAdventureHub {
     // ---------------- Bank ----------------
 
     private static void bankLoop(PlayerClass player, Scanner in) {
+        Audio.stopMusic();
+        Audio.playMusicLoop("shopBank.wav", -12.0f);
+        showArt(3);
+        System.out.println();
         System.out.println();
         System.out.println("You enter the Bank.");
         System.out.println("A suited banker looks up like she's tired of being perceived.");
@@ -201,6 +223,8 @@ public class TextAdventureHub {
 
     private static void forestVenture(PlayerClass player, Scanner in) {
         System.out.println();
+        showArt(5);
+        System.out.println();
         System.out.println("You stand at the edge of the Forest.");
         boolean go = askYesNo(in, "Venture into combat? (Y/N)");
         if (!go) {
@@ -215,6 +239,8 @@ public class TextAdventureHub {
 
     private static void mountainVenture(PlayerClass player, Scanner in) {
         System.out.println();
+        showArt(6);
+        System.out.println();
         System.out.println("The Mountain looms.");
         boolean go = askYesNo(in, "Are you ready to take on the dragon? (Y/N)");
         if (!go) {
@@ -227,17 +253,20 @@ public class TextAdventureHub {
         System.out.println("Back to the Village. For now.");
     }
 
-        private static void showArt(int n) {
-        String path = "/resources/art/art" + n + ".txt";
-        System.out.println(readResourceText(path));
+    private static void showArt(int n) {
+        Path p = Paths.get("src", "resources", "art", "art" + n + ".txt");
+        System.out.println(readTextFile(p));
     }
 
-    private static String readResourceText(String path) {
-            try (var in = TextAdventureHub.class.getResourceAsStream(path)) {
-            if (in == null) return "Missing resource: " + path;
-            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+    private static String readTextFile(Path p) {
+        try {
+            if (!Files.exists(p)) {
+                return "Missing file: " + p.toAbsolutePath();
+            }
+
+            return Files.readString(p, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            return "Failed to read " + path + "\n" + e;
+            return "Failed to read file: " + p.toAbsolutePath() + "\n" + e;
         }
     }
 }
