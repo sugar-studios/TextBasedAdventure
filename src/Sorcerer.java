@@ -19,7 +19,9 @@ public class Sorcerer extends PlayerClass {
     public Sorcerer(String name) {
         super(name);
 
-        setHealth(20.0);
+        this.maxHealth = 20;
+
+        setHealth(maxHealth);
 
         setArmourClass(BASE_AC);
         setMoveSpeed(BASE_MOVE);

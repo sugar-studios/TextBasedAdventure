@@ -17,7 +17,9 @@ public class Soldier extends PlayerClass {
     public Soldier(String name) {
         super(name);
 
-        setHealth(35.0);
+        this.maxHealth = 35;
+
+        setHealth(maxHealth);
 
         setArmourClass(DEFAULT_AC);
         setMoveSpeed(2);

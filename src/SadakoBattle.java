@@ -1,10 +1,8 @@
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public final class SadakoBattle {
 
@@ -80,10 +78,9 @@ public final class SadakoBattle {
                 "led"
         ),
         new Puzzle(
-            "THめ DめLUDGめ OF 'Fめ_ _'" +
-            "\n" +
-            "What word is 'Fめ_ _'?\n",
-            "fear"
+                "THめ DめLUDGめ OF 'Fめ_ _'\n" +
+                "What word is 'Fめ_ _'?\n",
+                "fear"
         )
     );
 
@@ -100,54 +97,36 @@ public final class SadakoBattle {
         System.out.println();
         System.out.println("Something inside you whispers: solve it. Quickly.");
         System.out.println("You have 7 turns. A turn passes every 4 seconds.");
-        System.out.println("Type the answer at any time.");
+        System.out.println("Type the answer at any time (press Enter).");
 
         Puzzle p = PUZZLES.get(RNG.nextInt(PUZZLES.size()));
         System.out.println();
         System.out.println("--- PUZZLE ---");
         System.out.println(p.prompt);
 
-        BlockingQueue<String> lines = new LinkedBlockingQueue<>();
-
-        Thread inputThread = new Thread(() -> {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    String s = in.nextLine();
-                    if (s == null) break;
-                    lines.offer(s);
-                }
-            } catch (Exception ignored) {
-            }
-        }, "SadakoInputThread");
-        inputThread.setDaemon(true);
-        inputThread.start();
-
         final int totalTurns = 7;
         final long turnMillis = 4000;
+        final long totalMillis = totalTurns * turnMillis;
 
         long start = System.currentTimeMillis();
 
         for (int turn = 1; turn <= totalTurns; turn++) {
             long turnStart = System.currentTimeMillis();
+            long turnEnd = turnStart + turnMillis;
 
             System.out.println();
-            System.out.println("Turn " + turn + "/" + totalTurns + " (time remaining: " +
-                    Math.max(0, 28 - ((System.currentTimeMillis() - start) / 1000)) + "s)");
+            long elapsed = System.currentTimeMillis() - start;
+            long remainingTotal = Math.max(0, totalMillis - elapsed);
+
+            System.out.println("Turn " + turn + "/" + totalTurns + " (time remaining: " + (remainingTotal / 1000) + "s)");
             System.out.print("> ");
 
-            long remaining = turnMillis;
-
-            // During this 4-second window, accept as many attempts as the player types.
-            while (remaining > 0) {
-                String attempt;
-                try {
-                    attempt = lines.poll(remaining, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    attempt = null;
-                }
-
-                if (attempt != null) {
+            // Single-threaded input polling: no background thread, no Scanner corruption.
+            while (System.currentTimeMillis() < turnEnd) {
+                if (stdinHasLineReady()) {
+                    String attempt = in.nextLine();
                     String ans = attempt.trim().toLowerCase(Locale.ROOT);
+
                     if (ans.equals(p.answer)) {
                         System.out.println();
                         System.out.println("The well goes silent.");
@@ -155,25 +134,23 @@ public final class SadakoBattle {
                         System.out.println("The pressure in your skull releases.");
                         sleep(500);
                         System.out.println("You step back, and the woods remember how to breathe.");
-                        return true; // survived
+                        return true;
                     } else if (!ans.isEmpty()) {
                         System.out.println("Wrong.");
                         System.out.print("> ");
+                    } else {
+                        System.out.print("> ");
                     }
+                } else {
+                    sleep(25);
                 }
-
-                long now = System.currentTimeMillis();
-                remaining = turnMillis - (now - turnStart);
             }
 
-            // Turn auto-advances after 4 seconds
             System.out.println();
             System.out.println("(A turn passes.)");
         }
 
         // Time up -> cutscene
-        try { inputThread.interrupt(); } catch (Exception ignored) {}
-
         System.out.println();
         System.out.println("You freeze.");
         sleep(3000);
@@ -210,29 +187,21 @@ public final class SadakoBattle {
         sleep(3000);
         System.out.println("Her hair sways and you catch a glimmer of her eyes");
         sleep(1000);
-        System.out.print("H");
-        sleep(200);
-        System.out.print("A");
-        sleep(200);
-        System.out.print("T");
-        sleep(200);
-        System.out.print("E");
-        sleep(2000);
-        System.out.print(". A");
-        sleep(200);
-        System.out.print("N");
-        sleep(200);
-        System.out.print("G");
-        sleep(200);
-        System.out.print("E");
-        sleep(200);
+        System.out.print("H"); sleep(200);
+        System.out.print("A"); sleep(200);
+        System.out.print("T"); sleep(200);
+        System.out.print("E"); sleep(2000);
+        System.out.print(". A"); sleep(200);
+        System.out.print("N"); sleep(200);
+        System.out.print("G"); sleep(200);
+        System.out.print("E"); sleep(200);
         System.out.println("R");
         sleep(2000);
         System.out.println("Her energy is intolerable, your mind shatters");
         sleep(1000);
 
         System.out.println();
-        player.setHealth(player.getHealth() - 1);
+        player.setHealth(player.getHealth() - 5);
         System.out.println("-5 HP.");
         if (!player.isAlive()) {
             System.out.println(player.getName() + " dies on the cold leaves.");
@@ -253,6 +222,14 @@ public final class SadakoBattle {
         System.out.println("Game over.");
         System.exit(0);
         return false;
+    }
+
+    private static boolean stdinHasLineReady() {
+        try {
+            return System.in.available() > 0;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private static void sleep(long ms) {

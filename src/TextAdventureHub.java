@@ -3,9 +3,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Scanner;
 
 public class TextAdventureHub {
+
+    private static final Random RNG = new Random();
 
     public static void villageLoop(PlayerClass player, Scanner in) {
         System.out.println("You wake up in the Village.");
@@ -17,7 +20,7 @@ public class TextAdventureHub {
             Audio.playMusicLoop("main.wav", -12.0f);
             System.out.println();
             System.out.println("=== VILLAGE HUB ===");
-            System.out.println("Options: casino, bank, shop, armory, forest, mountain, status, help, quit");
+            System.out.println("Options: casino, bank, shop, armory, hospital, forest, mountain, status, help, quit");
 
             String cmd = readCommand(in);
             switch (cmd) {
@@ -27,6 +30,7 @@ public class TextAdventureHub {
                 case "armory" -> armoryLoop(player, in);
                 case "forest" -> forestVenture(player, in);
                 case "mountain" -> mountainVenture(player, in);
+                case "hospital" -> hospitalLoop(player, in);
                 case "status" -> showStatus(player);
                 case "help" -> villageHelp();
                 case "quit", "exit" -> {
@@ -38,9 +42,18 @@ public class TextAdventureHub {
         }
     }
 
+    private static void playMenuClick() {
+        // click1.wav ... click7.wav
+        int n = 1 + RNG.nextInt(7);
+        Audio.playSfx("click" + n + ".wav", -10.0f);
+    }
+
     private static String readCommand(Scanner in) {
         System.out.print("> ");
         String s = in.nextLine().trim().toLowerCase(Locale.ROOT);
+
+        if (!s.isEmpty()) playMenuClick();
+
         if (s.equals("armoury")) s = "armory";
         return s;
     }
@@ -49,6 +62,9 @@ public class TextAdventureHub {
         while (true) {
             System.out.print(prompt + " ");
             String s = in.nextLine().trim().toLowerCase(Locale.ROOT);
+
+            if (!s.isEmpty()) playMenuClick();
+
             if (s.equals("y") || s.equals("yes")) return true;
             if (s.equals("n") || s.equals("no")) return false;
             System.out.println("Just Y or N.");
@@ -217,6 +233,65 @@ public class TextAdventureHub {
         System.out.println();
         System.out.println("Take loans and repay them to progress bank stages.");
         System.out.println("After stage 11, you must earn gold before repayment unlocks.");
+    }
+
+    // ---------------- Hospital ----------------
+
+    private static void hospitalLoop(PlayerClass player, Scanner in) {
+        Audio.stopMusic();
+        Audio.playMusicLoop("shopHospital.wav", -12.0f);
+        showArt(7);
+        System.out.println();
+        System.out.println();
+        System.out.println("You enter the Hospital.");
+        System.out.println("It smells like antiseptic and bad decisions. A nurse looks you over.");
+
+        while (true) {
+            System.out.println();
+            System.out.println("=== HOSPITAL ===");
+            System.out.println("Options: talk, help, heal, leave");
+
+            String cmd = readCommand(in);
+            switch (cmd) {
+                case "talk" -> Interactions.talkHospital(player, in);
+                case "help" -> hospitalHelp();
+                case "heal" -> doHospitalHeal(player);
+                case "leave" -> {
+                    System.out.println("You step back into the Village.");
+                    return;
+                }
+                default -> System.out.println("\"Use the options.\"");
+            }
+        }
+    }
+
+    private static void hospitalHelp() {
+        System.out.println();
+        System.out.println("Pay 20 gold to be fully healed.");
+    }
+
+    private static void doHospitalHeal(PlayerClass player) {
+        final int cost = 20;
+
+        if (player.getGold() < cost) {
+            System.out.println("You pat your pockets. Not enough gold.");
+            return;
+        }
+
+        double maxHp = player.getMaxHealth();
+
+        if (player.getHealth() >= maxHp) {
+            System.out.println("You're already in perfect health. The nurse looks offended.");
+            return;
+        }
+
+        player.setGold(player.getGold() - cost);
+        player.setHealth(maxHp);
+
+        Audio.playSfx("blipSelect.wav", -10.0f);
+
+        System.out.println("You pay 20 gold. They patch you up fast.");
+        System.out.println("Health restored to full.");
     }
 
     // ---------------- Outside ----------------

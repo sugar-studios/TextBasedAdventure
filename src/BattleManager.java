@@ -10,6 +10,35 @@ public class BattleManager {
 
     private int battleDifficulty = 0;
 
+    private static final Random SFX_RNG = new Random();
+
+    private static void sfxClick() {
+        int n = 1 + SFX_RNG.nextInt(7);
+        Audio.playSfx("click" + n + ".wav", -10.0f);
+    }
+
+    private static void sfxDestroy() {
+        int n = 1 + SFX_RNG.nextInt(2);
+        Audio.playSfx("destory" + n + ".wav", -8.0f);
+    }
+
+    private static void sfxHurt() {
+        Audio.playSfx("hurt1.wav", -8.0f);
+    }
+
+    private static void sfxLightHit() {
+        int n = 1 + SFX_RNG.nextInt(3);
+        Audio.playSfx("lightHit" + n + ".wav", -10.0f);
+    }
+
+    private static void sfxPotion() {
+        Audio.playSfx("potion.wav", -10.0f);
+    }
+
+    /**
+     * Builds a scripted encounter by clearing the grid, placing walls/spawns at fixed coordinates,
+     * and then starting the normal combat loop with the placed units.
+     */
     public void createScriptedBattle(
         PlayerClass player,
         ArrayList<Enemy> enemies,
@@ -94,6 +123,10 @@ public class BattleManager {
         startCombat(player, enemies, grid, renderer, this.battleDifficulty);
     }
 
+    /**
+     * Spawns the player/enemies randomly, generates walls while keeping paths valid,
+     * then starts the main combat loop.
+     */
     public void createBasicBattle(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid, Renderer renderer, int wallDensity, int difficulty) {
         wallDensity = Math.max(0, Math.min(100, wallDensity));
         this.battleDifficulty = Math.max(0, difficulty);
@@ -127,6 +160,9 @@ public class BattleManager {
         createBasicBattle(player, enemyList, grid, renderer, wallDensity, difficulty);
     }
 
+    /**
+     * Runs the full combat loop: draw grid, process player turn, then each enemy turn, until victory/defeat.
+     */
     private void startCombat(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid, Renderer renderer, int difficulty) {
         if (scnr == null) scnr = new Scanner(System.in);
 
@@ -153,9 +189,9 @@ public class BattleManager {
 
                 if (!player.isAlive()) {
                     System.out.println(player.getName() + " has been defeated!");
-                        battleOver = true;
-                        App.defeat(player);
-                        return;
+                    battleOver = true;
+                    App.defeat(player);
+                    return;
                 }
             }
 
@@ -165,6 +201,9 @@ public class BattleManager {
         renderer.drawGrid(true);
     }
 
+    /**
+     * Handles the player's turn menu and actions, including checking victory/defeat conditions each loop.
+     */
     private void playerTurn(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid, Renderer renderer, int difficulty) {
 
         while (!battleOver) {
@@ -245,10 +284,14 @@ public class BattleManager {
                 System.out.println("Invalid Input");
                 continue;
             }
+            sfxClick();
             return move;
         }
     }
 
+    /**
+     * Shows a paged list of attacks, lets the player pick an in-range target, then applies the attack and updates victory state.
+     */
     private void playerAttackMenu(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid) {
         if (player.getAttackList().isEmpty()) {
             System.out.println("You have no attacks.");
@@ -285,14 +328,19 @@ public class BattleManager {
                 continue;
             }
 
-            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) return;
+            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) {
+                sfxClick();
+                return;
+            }
 
             if (pageCount > 1 && raw.equals("n")) {
+                sfxClick();
                 if (page < pageCount - 1) page++;
                 else System.out.println("Already on last page.");
                 continue;
             }
             if (pageCount > 1 && raw.equals("p")) {
+                sfxClick();
                 if (page > 0) page--;
                 else System.out.println("Already on first page.");
                 continue;
@@ -311,13 +359,17 @@ public class BattleManager {
                 continue;
             }
 
+            sfxClick();
+
             int selectedIndex = start + (choice - 1);
             Attack selectedAttack = player.getAttackList().get(selectedIndex);
 
             Enemy target = pickEnemyTargetInRange(player, enemyList, grid, selectedAttack);
             if (target == null) continue;
 
+            double beforeHp = target.getHealth();
             player.performAttack(selectedAttack, target);
+            if (target.getHealth() < beforeHp) sfxLightHit();
 
             if (!target.isAlive()) {
                 handleEnemyDefeat(player, target, enemyList, grid);
@@ -332,6 +384,9 @@ public class BattleManager {
         }
     }
 
+    /**
+     * Shows a paged list of specials and executes the selected special (optionally choosing a target if required).
+     */
     private void playerSpecialMenu(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid) {
         if (player.getSpecialList().isEmpty()) {
             System.out.println("You have no specials.");
@@ -368,14 +423,19 @@ public class BattleManager {
                 continue;
             }
 
-            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) return;
+            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) {
+                sfxClick();
+                return;
+            }
 
             if (pageCount > 1 && raw.equals("n")) {
+                sfxClick();
                 if (page < pageCount - 1) page++;
                 else System.out.println("Already on last page.");
                 continue;
             }
             if (pageCount > 1 && raw.equals("p")) {
+                sfxClick();
                 if (page > 0) page--;
                 else System.out.println("Already on first page.");
                 continue;
@@ -393,6 +453,8 @@ public class BattleManager {
                 System.out.println("Invalid Input");
                 continue;
             }
+
+            sfxClick();
 
             int selectedIndex = start + (choice - 1);
             Special selected = player.getSpecialList().get(selectedIndex);
@@ -455,14 +517,19 @@ public class BattleManager {
                 continue;
             }
 
-            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) return;
+            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) {
+                sfxClick();
+                return;
+            }
 
             if (pageCount > 1 && raw.equals("n")) {
+                sfxClick();
                 if (page < pageCount - 1) page++;
                 else System.out.println("Already on last page.");
                 continue;
             }
             if (pageCount > 1 && raw.equals("p")) {
+                sfxClick();
                 if (page > 0) page--;
                 else System.out.println("Already on first page.");
                 continue;
@@ -494,17 +561,24 @@ public class BattleManager {
                 System.out.println("Invalid Input");
                 continue;
             }
-            if (choice == 0) return null;
+            if (choice == 0) {
+                sfxClick();
+                return null;
+            }
 
             int idx = choice - 1;
             if (idx < 0 || idx >= candidates.size()) {
                 System.out.println("Invalid Input");
                 continue;
             }
+            sfxClick();
             return candidates.get(idx);
         }
     }
 
+    /**
+     * Filters enemies by range from the player, prints a target list, and returns the chosen enemy (or null to cancel).
+     */
     private Enemy pickEnemyTargetInRange(PlayerClass player, ArrayList<Enemy> enemyList, BattleGrid grid, Attack atk) {
 
         Point pp = findPointByOccupant(grid, player);
@@ -548,13 +622,17 @@ public class BattleManager {
                 System.out.println("Invalid Input");
                 continue;
             }
-            if (choice == 0) return null;
+            if (choice == 0) {
+                sfxClick();
+                return null;
+            }
 
             int idx = choice - 1;
             if (idx < 0 || idx >= candidates.size()) {
                 System.out.println("Invalid Input");
                 continue;
             }
+            sfxClick();
             return candidates.get(idx);
         }
     }
@@ -574,15 +652,21 @@ public class BattleManager {
             }
 
             char c = raw.charAt(0);
-            if (c == '0' || raw.equals("back") || raw.equals("b")) return;
+            if (c == '0' || raw.equals("back") || raw.equals("b")) {
+                sfxClick();
+                return;
+            }
 
-            if (c == '1') itemConsumablesMenu(player);
-            else if (c == '2') itemAmmoMenu(player);
-            else if (c == '3') itemWeaponsMenu(player);
+            if (c == '1') { sfxClick(); itemConsumablesMenu(player); }
+            else if (c == '2') { sfxClick(); itemAmmoMenu(player); }
+            else if (c == '3') { sfxClick(); itemWeaponsMenu(player); }
             else System.out.println("Invalid Input");
         }
     }
 
+    /**
+     * Displays consumables with paging and consumes the chosen item, applying its effect immediately.
+     */
     private void itemConsumablesMenu(PlayerClass player) {
         Map<Consumable, Integer> inv = player.getConsumableInventoryView();
         if (inv.isEmpty()) {
@@ -623,14 +707,19 @@ public class BattleManager {
                 continue;
             }
 
-            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) return;
+            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) {
+                sfxClick();
+                return;
+            }
 
             if (pageCount > 1 && raw.equals("n")) {
+                sfxClick();
                 if (page < pageCount - 1) page++;
                 else System.out.println("Already on last page.");
                 continue;
             }
             if (pageCount > 1 && raw.equals("p")) {
+                sfxClick();
                 if (page > 0) page--;
                 else System.out.println("Already on first page.");
                 continue;
@@ -645,10 +734,13 @@ public class BattleManager {
                 continue;
             }
 
+            sfxClick();
+
             int selectedIndex = start + (choice - 1);
             Consumable selected = items.get(selectedIndex);
 
             player.useConsumable(selected);
+            sfxPotion();
             return;
         }
     }
@@ -671,7 +763,7 @@ public class BattleManager {
         while (true) {
             String raw = scnr.nextLine().trim().toLowerCase();
             if (raw.isEmpty()) { System.out.println("Invalid Input"); continue; }
-            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) return;
+            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) { sfxClick(); return; }
             System.out.println("Invalid Input");
         }
     }
@@ -715,14 +807,16 @@ public class BattleManager {
             String raw = scnr.nextLine().trim().toLowerCase();
             if (raw.isEmpty()) { System.out.println("Invalid Input"); continue; }
 
-            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) return;
+            if (raw.equals("0") || raw.equals("back") || raw.equals("b")) { sfxClick(); return; }
 
             if (pageCount > 1 && raw.equals("n")) {
+                sfxClick();
                 if (page < pageCount - 1) page++;
                 else System.out.println("Already on last page.");
                 continue;
             }
             if (pageCount > 1 && raw.equals("p")) {
+                sfxClick();
                 if (page > 0) page--;
                 else System.out.println("Already on first page.");
                 continue;
@@ -737,6 +831,8 @@ public class BattleManager {
                 continue;
             }
 
+            sfxClick();
+
             int selectedIndex = start + (choice - 1);
             player.equipWeapon(selectedIndex);
 
@@ -744,6 +840,9 @@ public class BattleManager {
         }
     }
 
+    /**
+     * Lets the player move tile-by-tile using WASD until move speed is spent or they exit move mode.
+     */
     private void playerMoveMode(PlayerClass player, BattleGrid grid, Renderer renderer) {
         int moveLeft = Math.max(0, player.getMoveSpeed());
         if (moveLeft == 0) {
@@ -762,7 +861,7 @@ public class BattleManager {
             String raw = scnr.nextLine().trim().toLowerCase();
             if (raw.isEmpty()) { System.out.println("Invalid Input"); continue; }
 
-            if (raw.equals("done") || raw.equals("back") || raw.equals("b") || raw.equals("0")) return;
+            if (raw.equals("done") || raw.equals("back") || raw.equals("b") || raw.equals("0")) { sfxClick(); return; }
 
             int dx = 0, dy = 0;
             char c = raw.charAt(0);
@@ -836,7 +935,12 @@ public class BattleManager {
         battleOver = true;
     }
 
+    /**
+     * Removes a dead enemy from the grid/list, awards gold, and triggers post-kill effects on the player.
+     */
     private void handleEnemyDefeat(PlayerClass player, Enemy dead, ArrayList<Enemy> enemyList, BattleGrid grid) {
+
+        sfxDestroy();
 
         int g = dead.getGold();
         if (g > 0) {
@@ -875,54 +979,65 @@ public class BattleManager {
         return true;
     }
 
+    /**
+     * Runs a simple enemy turn: attack if in range, otherwise move toward the player and attack again if possible.
+     */
     private void enemyAI(Enemy enemy, PlayerClass player, BattleGrid grid) {
         System.out.println(String.format("Turn %d; %s's turn!", turnCount, enemy.getName()));
 
         if (!enemy.isAlive()) return;
-        if (!player.isAlive()) { 
-                System.out.println(player.getName() + " has been defeated!");
-                battleOver = true;
-                App.defeat(player);
-                return; 
+        if (!player.isAlive()) {
+            System.out.println(player.getName() + " has been defeated!");
+            battleOver = true;
+            App.defeat(player);
+            return;
         }
 
         if (isInRange(grid, enemy, player, enemy.getRange())) {
             System.out.println(enemy.getName() + " attacks!");
 
+            double before = player.getHealth();
+
             if (enemy instanceof Dragon d) d.takeBossTurn(player, grid);
             else enemy.attackWithCrit(player);
 
-            if (!player.isAlive()) { 
+            if (player.getHealth() < before) sfxHurt();
+
+            if (!player.isAlive()) {
                 System.out.println(player.getName() + " has been defeated!");
                 battleOver = true;
                 App.defeat(player);
-                return; 
-            }   
+                return;
+            }
             return;
         }
 
         moveEnemyTowardPlayer(enemy, player, grid);
 
         if (!enemy.isAlive()) return;
-        if (!player.isAlive()) { 
-                System.out.println(player.getName() + " has been defeated!");
-                battleOver = true;
-                App.defeat(player);
-                return; 
-        }   
+        if (!player.isAlive()) {
+            System.out.println(player.getName() + " has been defeated!");
+            battleOver = true;
+            App.defeat(player);
+            return;
+        }
 
         if (isInRange(grid, enemy, player, enemy.getRange())) {
             System.out.println(enemy.getName() + " attacks!");
 
+            double before = player.getHealth();
+
             if (enemy instanceof Dragon d) d.takeBossTurn(player, grid);
             else enemy.attackWithCrit(player);
 
-            if (!player.isAlive()) { 
+            if (player.getHealth() < before) sfxHurt();
+
+            if (!player.isAlive()) {
                 System.out.println(player.getName() + " has been defeated!");
                 battleOver = true;
                 App.defeat(player);
-                return; 
-            }   
+                return;
+            }
         }
     }
 
@@ -938,6 +1053,9 @@ public class BattleManager {
         return dx <= range && dy <= range;
     }
 
+    /**
+     * Moves an enemy step-by-step toward the player, trying straight moves first and then small diagonals as fallbacks.
+     */
     private void moveEnemyTowardPlayer(Enemy enemy, PlayerClass player, BattleGrid grid) {
         int steps = Math.max(0, enemy.getMoveSpeed());
         if (steps == 0) return;
@@ -1031,6 +1149,9 @@ public class BattleManager {
         return enemyPoints;
     }
 
+    /**
+     * Randomly places rectangle/L wall clusters up to a density target while ensuring the player can still reach all enemies.
+     */
     private void placeWallShapes(BattleGrid grid, Point playerPoint, ArrayList<Point> enemyPoints, int wallDensity) {
 
         int totalCells = grid.getWidth() * grid.getHeight();
@@ -1136,6 +1257,9 @@ public class BattleManager {
         for (int[] c : shape) grid.setEmpty(c[0], c[1]);
     }
 
+    /**
+     * Flood-fills from the player and confirms every enemy spawn is reachable (used to prevent unwinnable maps).
+     */
     private boolean pathsExist(BattleGrid grid, Point start, ArrayList<Point> enemyPoints) {
         if (start == null) return false;
         if (enemyPoints == null || enemyPoints.isEmpty()) return true;

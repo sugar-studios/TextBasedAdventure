@@ -36,8 +36,9 @@ public class PlayerClass extends Entity {
     private LinkedList<Special> specialList;
 
     public PlayerClass(String name) {
+        this.maxHealth = 30.0;
         this.name = name;
-        this.health = 30.0;
+        this.health = this.maxHealth;
         this.gold = 10;
         this.mana = 0;
         this.gridID = 'P';

@@ -1,6 +1,7 @@
 public abstract class Entity {
 
     protected double health;
+    protected double maxHealth;
     protected String name;
 
     protected int armourClass;
@@ -41,4 +42,7 @@ public abstract class Entity {
     public void setMoveSpeed(int moveSpeed) { this.moveSpeed = moveSpeed; }
 
     public char getGridID() { return gridID; }
+
+    public double getMaxHealth() { return maxHealth; }
+
 }

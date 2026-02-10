@@ -11,7 +11,9 @@ public class Ranger extends PlayerClass {
     public Ranger(String name) {
         super(name);
 
-        setHealth(25.0);
+        this.maxHealth = 25;
+
+        setHealth(maxHealth);
 
         setArmourClass(BASE_AC);
         setMoveSpeed(BASE_MOVE);

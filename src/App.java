@@ -1,3 +1,33 @@
+/*
+Name: Alexander Calkins
+Course and Section: CSC 205
+Date: 2/9/26
+
+Program Description:
+This program is a text-based adventure game where the player explores a village hub,
+enters different locations (casino, shop, armory, hospital, forest, and mountain),
+fights enemies in grid-based combat, manages gold, health, weapons, and inventory,
+and progresses through encounters and events.
+
+Program Inputs (main):
+The program reads user input from the keyboard using a Scanner. The player:
+- chooses whether audio is enabled (y/n)
+- selects a character class
+- enters a player name
+- types commands to navigate the village and gameplay systems
+
+Program Outputs (main):
+The program prints all game text to the console, including:
+- menus and location descriptions
+- combat narration and results
+- player status and inventory information
+- story events and game-over messages
+It also optionally plays music and sound effects.
+*/
+
+
+
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -369,7 +399,6 @@ public class App {
         renderer = new Renderer(grid);
         System.out.println("Forest encounter " + encounter + "/15");
         
-        // IMPORTANT: use scanner-sharing overload
         bM.createBasicBattle(player, eL, grid, renderer, wallDensity, difficulty, in);
     }
 
@@ -406,3 +435,20 @@ public class App {
         }
     }
 }
+
+
+
+/*
+ * TESTS / VALIDATION
+ * Example:
+ * Test 1:
+ * <full execution run of sadako boss fight>
+ * <many bugs exist, still working on getting conole japnese to work>
+ * <satisfactory>
+ *
+ * Test 2:
+ * <full execution run of program>
+ * <tested bank loans, black jack, and hospital>
+ * <all seem to work along with dragon fight>
+ *
+ */

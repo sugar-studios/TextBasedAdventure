@@ -2,7 +2,15 @@ import java.util.*;
 
 public final class Interactions {
 
+private static final Random RNG = new Random();
+
     private Interactions() {}
+
+        private static void playMenuClick() {
+        // click1.wav ... click7.wav
+        int n = 1 + RNG.nextInt(7);
+        Audio.playSfx("click" + n + ".wav", -10.0f);
+    }
 
     private static final class Option {
         final String key;     // "a","b","c"
@@ -44,6 +52,7 @@ public final class Interactions {
             for (Option o : n.options) System.out.println("  (" + o.key + ") " + o.label);
 
             String choice = readChoice(in, n.options);
+            playMenuClick();
             Option picked = null;
             for (Option o : n.options) if (o.key.equals(choice)) { picked = o; break; }
             current = (picked == null) ? null : picked.nextId;
@@ -79,6 +88,11 @@ public final class Interactions {
     public static void talkBank(PlayerClass p, Scanner in) {
         runDialogue("Bank - Suit & Glasses", bankNodes(), new String[]{"b0","b1","b2"}, in);
     }
+
+    public static void talkHospital(PlayerClass p, Scanner in) {
+        runDialogue("Hospital - Nurse Outfit", hospitalNodes(), new String[]{"h0","h1","h2"}, in);
+    }
+
 
     private static Map<String, Node> casinoNodes() {
         Map<String, Node> m = new LinkedHashMap<>();
@@ -612,4 +626,312 @@ public final class Interactions {
 
         return m;
     }
+
+    private static Map<String, Node> hospitalNodes() {
+    Map<String, Node> m = new LinkedHashMap<>();
+
+    m.put("h0", new Node("h0", L(
+            "She glides over in a crisp nurse outfit, hands folded like prayer.",
+            "\"Peace be with you,\" she purrs.",
+            "\"Now tell me. Are you here to be healed… or to be ruined?\""
+    ), List.of(
+            new Option("a", "Ask for healing.", "hA"),
+            new Option("b", "Ask why she sounds like that.", "hB"),
+            new Option("c", "Ask about the 'same face' around town.", "hC"),
+            new Option("d", "Leave.", null)
+    )));
+
+    m.put("h1", new Node("h1", L(
+            "She checks a clipboard that is definitely blank.",
+            "\"I can triage a sword wound, a bruised ego, and a terrible decision.\"",
+            "\"Which one are you bleeding from today?\""
+    ), List.of(
+            new Option("a", "Sword wound.", "hD"),
+            new Option("b", "Ego.", "hE"),
+            new Option("c", "Terrible decision.", "hF"),
+            new Option("d", "Leave.", null)
+    )));
+
+    m.put("h2", new Node("h2", L(
+            "She taps your chest with two fingers like she's checking a fruit for ripeness.",
+            "\"Still breathing. Disappointing.\"",
+            "\"Kidding. Mostly.\""
+    ), List.of(
+            new Option("a", "Ask what the hospital actually is.", "hG"),
+            new Option("b", "Flirt back: \"Try harder.\"", "hH"),
+            new Option("c", "Ask about payment.", "hI"),
+            new Option("d", "Leave.", null)
+    )));
+
+    // Healing / services
+    m.put("hA", new Node("hA", L(
+            "\"Blessed be the insured,\" she says.",
+            "\"Twenty gold for absolution and stitches.\"",
+            "\"No refunds for emotional damage.\""
+    ), List.of(
+            new Option("a", "Ask what you get for 20 gold.", "hI"),
+            new Option("b", "Ask if she enjoys charging people.", "hJ"),
+            new Option("c", "Back away slowly.", null)
+    )));
+
+    m.put("hI", new Node("hI", L(
+            "\"Full restoration.\"",
+            "\"I put you back the way you were before you met this village.\"",
+            "\"Well—almost.\""
+    ), List.of(
+            new Option("a", "Ask what she means by 'almost'.", "hK"),
+            new Option("b", "Ask if she can heal debt, too.", "hL"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hK", new Node("hK", L(
+            "She smiles sweetly.",
+            "\"I can't cure personality.\"",
+            "\"But I can make you healthy enough to keep making mistakes.\""
+    ), List.of(
+            new Option("a", "That sounds like a scam.", "hJ"),
+            new Option("b", "Respect the honesty.", null),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hJ", new Node("hJ", L(
+            "\"Charging is the holiest act I know.\"",
+            "\"It teaches gratitude.\"",
+            "\"And desperation.\""
+    ), List.of(
+            new Option("a", "Ask if she believes in anything.", "hM"),
+            new Option("b", "Tell her she's awful.", "hN"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hL", new Node("hL", L(
+            "\"Debt is a chronic condition.\"",
+            "\"The bank will happily keep you sick.\"",
+            "\"The casino will congratulate you for it.\""
+    ), List.of(
+            new Option("a", "Ask what she thinks of the casino.", "hO"),
+            new Option("b", "Ask what she thinks of the bank.", "hP"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hO", new Node("hO", L(
+            "\"The casino is a confessional with better lighting.\"",
+            "\"People walk in guilty and walk out convinced it was destiny.\""
+    ), List.of(
+            new Option("a", "Ask if she ever gambles.", "hQ"),
+            new Option("b", "Say that's bleak.", null),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hP", new Node("hP", L(
+            "\"The bank sells patience.\"",
+            "\"You pay interest to borrow time.\"",
+            "\"The funniest part is you spend it running in circles.\""
+    ), List.of(
+            new Option("a", "Ask if she's mocking you.", "hR"),
+            new Option("b", "Ask if she wants you to escape.", "hS"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hB", new Node("hB", L(
+            "She places a hand over her heart like a saint in a painting.",
+            "\"I took an oath,\" she says softly.",
+            "\"Not to God. To entertainment.\""
+    ), List.of(
+            new Option("a", "Ask what the oath requires.", "hT"),
+            new Option("b", "Ask if she's flirting with you.", "hH"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hT", new Node("hT", L(
+            "\"I heal what can be healed.\"",
+            "\"I charge what can be charged.\"",
+            "\"And I keep you curious.\""
+    ), List.of(
+            new Option("a", "Ask why she wants you curious.", "hS"),
+            new Option("b", "Ask if she ever feels bad.", "hU"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hU", new Node("hU", L(
+            "She pauses like she's considering it honestly.",
+            "\"Sometimes.\"",
+            "\"Then I remember you were going to walk into the forest anyway.\""
+    ), List.of(
+            new Option("a", "Fair point.", null),
+            new Option("b", "Ask if she watches you.", "hV"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hV", new Node("hV", L(
+            "\"Sweetheart,\" she says, adjusting her gloves,",
+            "\"everyone in this village watches you.\"",
+            "\"The difference is I'm the only one who patches you up after.\""
+    ), List.of(
+            new Option("a", "Ask why the village wants you alive.", "hS"),
+            new Option("b", "Ask who 'everyone' is.", "hW"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hH", new Node("hH", L(
+            "Her smile widens, sharp around the edges.",
+            "\"Careful. I charge for pain relief.\"",
+            "\"I charge extra for pain.\""
+    ), List.of(
+            new Option("a", "Ask what 'extra' costs.", "hX"),
+            new Option("b", "Tell her she's insane.", "hN"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hX", new Node("hX", L(
+            "\"Depends,\" she says.",
+            "\"Do you want stitches or attention?\""
+    ), List.of(
+            new Option("a", "Stitches.", "hI"),
+            new Option("b", "Attention.", "hY"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hY", new Node("hY", L(
+            "She leans in, voice low.",
+            "\"Then stop trying to die.\"",
+            "\"You're making my job repetitive.\""
+    ), List.of(
+            new Option("a", "Ask if she gets bored.", "hQ"),
+            new Option("b", "Promise nothing.", null),
+            new Option("c", "Leave.", null)
+    )));
+
+    // “Same person” denial path
+    m.put("hC", new Node("hC", L(
+            "\"Same face?\" she repeats, sweet as sugar.",
+            "\"That's a symptom. I can treat it for 20 gold.\""
+    ), List.of(
+            new Option("a", "Press: \"You work every building.\"", "hCa"),
+            new Option("b", "Ask if she's related to them.", "hCb"),
+            new Option("c", "Drop it.", null),
+            new Option("d", "Leave.", null)
+    )));
+
+    m.put("hCa", new Node("hCa", L(
+            "She makes a little sign of blessing over you.",
+            "\"Delirium.\"",
+            "\"Common in patients with low blood and high imagination.\""
+    ), List.of(
+            new Option("a", "Call her bluff.", "hCc"),
+            new Option("b", "Ask for the truth.", "hW"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hCb", new Node("hCb", L(
+            "\"Of course I'm related to them,\" she says.",
+            "\"Women can have cheekbones in the same family.\"",
+            "\"Try reading a book that isn't a wanted poster.\""
+    ), List.of(
+            new Option("a", "Ask how big her family is.", "hW"),
+            new Option("b", "Apologize (barely).", null),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hCc", new Node("hCc", L(
+            "Her smile stays. Her eyes go flat.",
+            "\"If you're here to accuse me,\" she says,",
+            "\"do it quickly. I have patients who actually pay.\""
+    ), List.of(
+            new Option("a", "Back off.", null),
+            new Option("b", "One last push: \"Who are you really?\"", "hW"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hW", new Node("hW", L(
+            "She steps closer, voice almost gentle.",
+            "\"I'm the one who keeps you alive.\"",
+            "\"Everything else is a story you tell yourself.\""
+    ), List.of(
+            new Option("a", "Ask if you can ever leave.", "hS"),
+            new Option("b", "Ask if she wants you to win.", "hS"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hD", new Node("hD", L(
+            "\"Classic.\"",
+            "\"Try keeping your insides on the inside.\""
+    ), List.of(
+            new Option("a", "Ask for advice.", "hT"),
+            new Option("b", "Leave.", null)
+    )));
+
+    m.put("hE", new Node("hE", L(
+            "\"Oh, honey.\"",
+            "\"I can't stitch pride. I can only cauterize it.\""
+    ), List.of(
+            new Option("a", "Ask what that looks like.", "hN"),
+            new Option("b", "Leave.", null)
+    )));
+
+    m.put("hF", new Node("hF", L(
+            "\"Finally, honesty.\"",
+            "\"Most people call it fate to feel better.\""
+    ), List.of(
+            new Option("a", "Ask if she believes in fate.", "hM"),
+            new Option("b", "Leave.", null)
+    )));
+
+    m.put("hG", new Node("hG", L(
+            "\"This is where consequences come to be cleaned up.\"",
+            "\"Like a kitchen.\"",
+            "\"Or a crime scene.\""
+    ), List.of(
+            new Option("a", "Ask which one she prefers.", "hQ"),
+            new Option("b", "Leave.", null)
+    )));
+
+    m.put("hM", new Node("hM", L(
+            "\"I believe in patterns.\"",
+            "\"And you keep repeating yours.\""
+    ), List.of(
+            new Option("a", "Ask what pattern she sees.", "hS"),
+            new Option("b", "Tell her to stop psychoanalyzing you.", "hN"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hN", new Node("hN", L(
+            "\"Language,\" she scolds, not sounding scolding at all.",
+            "\"This is a hospital.\"",
+            "\"Sin elsewhere. Or pay me to pretend you didn't.\""
+    ), List.of(
+            new Option("a", "Ask if she's always like this.", "hQ"),
+            new Option("b", "Leave.", null)
+    )));
+
+    m.put("hQ", new Node("hQ", L(
+            "\"Boredom is a disease,\" she says.",
+            "\"I treat it by getting under people's skin.\""
+    ), List.of(
+            new Option("a", "Ask if she's bored right now.", "hY"),
+            new Option("b", "Ask what scares her.", "hR"),
+            new Option("c", "Leave.", null)
+    )));
+
+    m.put("hR", new Node("hR", L(
+            "\"Wasting effort,\" she admits.",
+            "\"Patching someone up just so they stop trying.\"",
+            "\"Don't do that.\""
+    ), List.of(
+            new Option("a", "Ask why she cares.", "hS"),
+            new Option("b", "Leave.", null)
+    )));
+
+    m.put("hS", new Node("hS", L(
+            "She watches you the way the casino watches a gambler.",
+            "\"Because you're not finished yet.\"",
+            "\"And neither am I.\""
+    ), List.of(
+            new Option("a", "Ask what 'finished' means.", null),
+            new Option("b", "Leave.", null)
+    )));
+
+    return m;
+}
+
 }
