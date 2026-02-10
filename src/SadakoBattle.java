@@ -117,8 +117,10 @@ public final class SadakoBattle {
         System.out.println("You have 28 seconds to solve the puzzle.");
         System.out.println("Type the answer at any time (press Enter).");
 
+
         Puzzle p = PUZZLES.get(RNG.nextInt(PUZZLES.size()));
         System.out.println();
+        System.out.println("You have 28 seconds.");
         System.out.println("--- PUZZLE ---");
         System.out.println(p.prompt);
 
@@ -139,12 +141,19 @@ public final class SadakoBattle {
                     sleep(500);
                     System.out.println("You step back, and the woods remember how to breathe.");
                     return true;
-                } else if (!ans.isEmpty()) {
-                    System.out.println("Wrong.");
-                    System.out.print("> ");
-                } else {
-                    System.out.print("> ");
                 }
+
+                if (!ans.isEmpty()) {
+                    int words = ans.split("\\s+").length;
+
+                    if (words > 1) {
+                        System.out.println("Wrong. It's only one word.");
+                    } else {
+                        System.out.println("Wrong. You hear the water in the well get restless.");
+                    }
+                }
+
+                System.out.print("> ");
             } else {
                 sleep(25);
             }
@@ -152,21 +161,21 @@ public final class SadakoBattle {
 
         System.out.println();
         System.out.println("You freeze.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("The well is the only thing in the world.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("A hand appears on the lip of the stone.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("Fingers. Nails. Slow certainty.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("A young woman, with long black hair covering her face crawls out.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("She stands.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("She takes a step.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("Another.");
-        sleep(3000);
+        sleep(1000);
 
         System.out.println();
         System.out.println("As you stumble backward, you trip and fall on your head.");
@@ -177,13 +186,13 @@ public final class SadakoBattle {
             System.out.println("Game over.");
             System.exit(0);
         }
-        sleep(3000);
+        sleep(1000);
         System.out.println();
 
         System.out.println("Your ears ring as she takes another step.");
-        sleep(3000);
+        sleep(1000);
         System.out.println("Your heart begins begins to make your ribs feel broken");
-        sleep(3000);
+        sleep(1000);
         System.out.println("Her hair sways and you catch a glimmer of her eyes");
         sleep(1000);
         System.out.print("H"); sleep(200);
@@ -208,14 +217,14 @@ public final class SadakoBattle {
             System.exit(0);
         }
         System.out.println();
-        sleep(3000);
+        sleep(1000);
 
         System.out.println("She is over you.");
-        sleep(3500);
+        sleep(1500);
         System.out.println("Her head tilts up.");
-        sleep(4000);
+        sleep(2000);
         System.out.println("You meet her eyes.");
-        sleep(1200);
+        sleep(3000);
 
         System.out.println();
         System.out.println("Game over.");
@@ -223,6 +232,8 @@ public final class SadakoBattle {
         return false;
     }
 
+
+    //AI GENERATED
     private static boolean stdinHasLineReady() {
         try {
             return System.in.available() > 0;
@@ -234,4 +245,6 @@ public final class SadakoBattle {
     private static void sleep(long ms) {
         try { Thread.sleep(ms); } catch (InterruptedException ignored) {}
     }
+
+    //END OF AI GENERATED
 }
