@@ -114,7 +114,7 @@ public final class SadakoBattle {
         sleep(2000);
         System.out.println();
         System.out.println("Something inside you whispers: solve it. Quickly.");
-        System.out.println("You have 7 turns. A turn passes every 4 seconds.");
+        System.out.println("You have 28 seconds to solve the puzzle.");
         System.out.println("Type the answer at any time (press Enter).");
 
         Puzzle p = PUZZLES.get(RNG.nextInt(PUZZLES.size()));
@@ -122,49 +122,32 @@ public final class SadakoBattle {
         System.out.println("--- PUZZLE ---");
         System.out.println(p.prompt);
 
-        final int totalTurns = 7;
-        final long turnMillis = 4000;
-        final long totalMillis = totalTurns * turnMillis;
+        final long totalMillis = 28_000L;
+        final long start = System.currentTimeMillis();
 
-        long start = System.currentTimeMillis();
+        System.out.print("> ");
+        while (System.currentTimeMillis() - start < totalMillis) {
+            if (stdinHasLineReady()) {
+                String attempt = in.nextLine();
+                String ans = attempt.trim().toLowerCase(Locale.ROOT);
 
-        for (int turn = 1; turn <= totalTurns; turn++) {
-            long turnStart = System.currentTimeMillis();
-            long turnEnd = turnStart + turnMillis;
-
-            System.out.println();
-            long elapsed = System.currentTimeMillis() - start;
-            long remainingTotal = Math.max(0, totalMillis - elapsed);
-
-            System.out.println("Turn " + turn + "/" + totalTurns + " (time remaining: " + (remainingTotal / 1000) + "s)");
-            System.out.print("> ");
-
-            while (System.currentTimeMillis() < turnEnd) {
-                if (stdinHasLineReady()) {
-                    String attempt = in.nextLine();
-                    String ans = attempt.trim().toLowerCase(Locale.ROOT);
-
-                    if (ans.equals(p.answer)) {
-                        System.out.println();
-                        System.out.println("The well goes silent.");
-                        sleep(500);
-                        System.out.println("The pressure in your skull releases.");
-                        sleep(500);
-                        System.out.println("You step back, and the woods remember how to breathe.");
-                        return true;
-                    } else if (!ans.isEmpty()) {
-                        System.out.println("Wrong.");
-                        System.out.print("> ");
-                    } else {
-                        System.out.print("> ");
-                    }
+                if (ans.equals(p.answer)) {
+                    System.out.println();
+                    System.out.println("The well goes silent.");
+                    sleep(500);
+                    System.out.println("The pressure in your skull releases.");
+                    sleep(500);
+                    System.out.println("You step back, and the woods remember how to breathe.");
+                    return true;
+                } else if (!ans.isEmpty()) {
+                    System.out.println("Wrong.");
+                    System.out.print("> ");
                 } else {
-                    sleep(25);
+                    System.out.print("> ");
                 }
+            } else {
+                sleep(25);
             }
-
-            System.out.println();
-            System.out.println("(A turn passes.)");
         }
 
         System.out.println();
