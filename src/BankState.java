@@ -1,5 +1,5 @@
 public class BankState {
-    public int bankStageX = 1;                  // starts at 1
+    public int bankStageX = 1;
     public boolean hasActiveLoan = false;
 
     public int activeLoanAmount = 0;

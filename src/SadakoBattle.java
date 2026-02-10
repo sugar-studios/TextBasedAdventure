@@ -1,3 +1,21 @@
+/*
+I tried for SO LONG to get this to work- the japanese hirgana in the console that it
+
+orgiannly I was going to use jswing to make a giu. If you want that I can send you the demo I made with it. The japanese text works over there 
+(granted the puzzles are not implemented, just the diffretn fonts and texts)
+
+but becuase I demo'd and designed each part of this game in it's own folder then merged it all togther, I had unittentally designed to 
+depend on Scanner, which is sycnronys. But my jswing set up was async so it oculdn't be neatly ported over and I only had 2 days left to 
+finish this project. My orginal plan was to make a custom console but alas time contraints really crunched down on me. In fact you can still see the old logo I had for the task bar and window 
+of the jframe burried in the resources. If github and grdale hadn't sh*t the bed maybe I would've had enough hours to think of solution, but really my lack of planning is 
+why I failed, I should've planned everything then coded before just coding. Will do for next time
+
+So this projcet is added to a list of failures in all regards as I failed to meet the baseline idea I had for this project. Like everything else I make. 
+
+*/
+
+
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -121,7 +139,6 @@ public final class SadakoBattle {
             System.out.println("Turn " + turn + "/" + totalTurns + " (time remaining: " + (remainingTotal / 1000) + "s)");
             System.out.print("> ");
 
-            // Single-threaded input polling: no background thread, no Scanner corruption.
             while (System.currentTimeMillis() < turnEnd) {
                 if (stdinHasLineReady()) {
                     String attempt = in.nextLine();
@@ -150,7 +167,6 @@ public final class SadakoBattle {
             System.out.println("(A turn passes.)");
         }
 
-        // Time up -> cutscene
         System.out.println();
         System.out.println("You freeze.");
         sleep(3000);

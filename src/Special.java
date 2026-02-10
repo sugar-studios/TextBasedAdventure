@@ -1,3 +1,12 @@
+/*
+
+Just like Attacks.java, the interface tells you everything- the rest is just nitty gritty nerd stuff. The code is pretty self explanatory. Its pretty basic,
+just a lot of nested basics.  
+
+*/
+
+
+
 interface Special {
     String getName();
     String getDescription();

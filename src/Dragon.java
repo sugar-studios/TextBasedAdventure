@@ -113,9 +113,6 @@ public class Dragon extends Enemy {
         claw(player, rage);
     }
 
-    // --- Attacks ---
-
-    // Requested baseline: 5–12 random damage
     private void claw(PlayerClass player, boolean rage) {
         int dmg = randInclusive(5, 12);
         if (rage) dmg *= 2;
@@ -124,7 +121,6 @@ public class Dragon extends Enemy {
         applyDamage(player, dmg);
     }
 
-    // Extra attack #1: big melee
     private void bite(PlayerClass player, boolean rage) {
         int dmg = randInclusive(9, 16);
         if (rage) dmg *= 2;
@@ -133,7 +129,6 @@ public class Dragon extends Enemy {
         applyDamage(player, dmg);
     }
 
-    // Extra attack #2: ranged
     private void fireball(PlayerClass player, boolean rage) {
         int dmg = randInclusive(6, 14);
         if (rage) dmg *= 2;
@@ -142,7 +137,6 @@ public class Dragon extends Enemy {
         applyDamage(player, dmg);
     }
 
-    // Extra attack #3: medium range + minor utility
     private void wingGust(PlayerClass player, boolean rage) {
         int dmg = randInclusive(4, 10);
         if (rage) dmg *= 2;

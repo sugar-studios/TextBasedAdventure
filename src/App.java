@@ -22,7 +22,14 @@ The program prints all game text to the console, including:
 - combat narration and results
 - player status and inventory information
 - story events and game-over messages
-It also optionally plays music and sound effects.
+- It also optionally plays music and sound effects.
+
+The core gameplay loop is fight in forest -> buy gear -> fight -> buy -> maybe gamble/bank ->forest
+then once you good enough gear or health potions you kill the dragon in the mt. You purposly have very little to 
+gain- just like the current economy! and just like the current economy if all your tools break and you have no gold- and no bank 
+loan to bail you out- "restarting" yourself in the forest is th eonly solution
+
+Its a game about managing your finances and griding to get better gear
 */
 
 
@@ -36,7 +43,7 @@ import java.util.Scanner;
 public class App {
     public static PlayerClass player;
     public static Scanner in;
-    private static final boolean FORCE_SADAKO = true;
+    private static final boolean FORCE_SADAKO = false;
     private static final Random RNG = new Random();
 
     // This code here was made by AI
@@ -201,12 +208,17 @@ public class App {
         return pick;
     }
 
+    //there are two rare fights sadako and champion, I didnt want to actually add 50 fights- so I just cheated and made them a random chance 
+    // if they get landed on and reroll the fight die if it fails
     private static boolean passesMythicCheck(Random rng) {
         return rng.nextInt(50) == 0;
     }
 
     public static void startForestBattle(PlayerClass player) {
+        //Sadako caused a LOT of bugs, still super buggy so I had to add this
         int encounter = FORCE_SADAKO ? 17 : rollEncounter17WithMythics(RNG);
+
+
         BattleManager bM = new BattleManager();
         ArrayList<Enemy> eL = new ArrayList<>();
         BattleGrid grid;
@@ -438,6 +450,9 @@ public class App {
 
 
 
+
+//This game is very hard to test once finished- I did most of my testing during the development progress. 
+// This game is very open ended, PLease tell me how to better do this next time
 /*
  * TESTS / VALIDATION
  * Example:

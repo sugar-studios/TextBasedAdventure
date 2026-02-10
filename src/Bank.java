@@ -1,8 +1,8 @@
 public class Bank {
 
     public enum EarnSource {
-        COMBAT_REWARD,       // per-kill + end-of-battle reward (net positive only)
-        CASINO_NET_PROFIT    // session net profit only (not gross)
+        COMBAT_REWARD,
+        CASINO_NET_PROFIT
     }
 
     private final BankState s;
@@ -48,7 +48,7 @@ public class Bank {
 
         s.post11TrackerEnabled = (x >= 11);
         if (s.post11TrackerEnabled) {
-            s.post11TrackerRemaining = (L + 1) / 2; // ceil(0.5*L)
+            s.post11TrackerRemaining = (L + 1) / 2;
         } else {
             s.post11TrackerRemaining = 0;
         }
@@ -98,14 +98,10 @@ public class Bank {
         if (!s.post11TrackerEnabled) return;
         if (s.post11TrackerRemaining <= 0) return;
 
-        // Eligible sources only (as you specified).
         if (source != EarnSource.COMBAT_REWARD && source != EarnSource.CASINO_NET_PROFIT) return;
 
         s.post11TrackerRemaining = Math.max(0, s.post11TrackerRemaining - amountEarned);
     }
-
-    // ---------------- MATH ----------------
-
     // Bonus:
     // y = cbrt(2) * x^(5/3) - 2x - 1
     public static double bonusY(int x) {

@@ -1,3 +1,15 @@
+/*
+basically create 3 random start points then each node refers to its own node and a list of options with labels 
+
+these labels mascarade as answers, and point to a new node, which then brings up the next node, as each node refers to itself it basically makes a perfect loop so
+basically a glorified linear walk thru a linked list... or map? IDK
+
+I think its clever
+*/
+
+
+
+
 import java.util.*;
 
 public final class Interactions {
@@ -7,15 +19,14 @@ private static final Random RNG = new Random();
     private Interactions() {}
 
         private static void playMenuClick() {
-        // click1.wav ... click7.wav
         int n = 1 + RNG.nextInt(7);
         Audio.playSfx("click" + n + ".wav", -10.0f);
     }
 
     private static final class Option {
-        final String key;     // "a","b","c"
+        final String key;
         final String label;
-        final String nextId;  // null = exit
+        final String nextId;
         Option(String key, String label, String nextId) {
             this.key = key;
             this.label = label;

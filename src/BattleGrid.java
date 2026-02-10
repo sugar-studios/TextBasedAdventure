@@ -53,6 +53,8 @@ public class BattleGrid {
         return p != null && !p.getIsWall() && p.getOccupant() == null;
     }
 
+
+    //Bresenham's line algorithm
     public boolean hasLineOfSight(Point p1, Point p2) {
         if (p1 == null || p2 == null) return false;
 
@@ -118,6 +120,8 @@ public class BattleGrid {
         return sb.toString();
     }
 
+
+    // Use chess radius strats
     public ArrayList<Point> getPointsInRadius(Point center, int r, boolean print) {
         ArrayList<Point> radius = new ArrayList<>();
         if (center == null || r < 0) return radius;

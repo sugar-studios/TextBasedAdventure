@@ -7,8 +7,7 @@ import java.util.Scanner;
 
 public class Casino {
 
-    private static final double BLACKJACK_PAYOUT_MULT = 1.5; // 3:2 payout (profit = bet * 1.5)
-    // If you truly meant "2:3 payout" (profit = bet * 0.666...), set this to (2.0/3.0)
+    private static final double BLACKJACK_PAYOUT_MULT = 1.5;
 
     public static void playBlackjack(PlayerClass player, Scanner in) {
         System.out.println();
@@ -47,7 +46,7 @@ public class Casino {
                 continue;
             }
 
-            // If deck getting low, refresh (simple casino behavior)
+            // If deck getting low, refresh
             if (deck.remaining() < 15) deck = new Deck();
 
             Hand playerHand = new Hand();
@@ -67,12 +66,12 @@ public class Casino {
 
             Outcome outcome;
 
+            //player can only hit or stand
             if (playerBJ || dealerBJ) {
                 if (playerBJ && dealerBJ) outcome = Outcome.PUSH;
                 else if (playerBJ) outcome = Outcome.PLAYER_BLACKJACK;
                 else outcome = Outcome.PLAYER_LOSS;
             } else {
-                // Player turn: hit/stand only
                 while (true) {
                     if (playerHand.bestValue() > 21) break;
 
@@ -109,17 +108,17 @@ public class Casino {
                 }
             }
 
-            int deltaGold = 0; // positive means player should receive; negative means player pays
+            int deltaGold = 0;
             double payoff = 0.0;
 
             switch (outcome) {
                 case PLAYER_BLACKJACK -> {
                     payoff = bet * BLACKJACK_PAYOUT_MULT;
-                    deltaGold = bet + (int)Math.floor(payoff); // player receives stake back + profit
+                    deltaGold = bet + (int)Math.floor(payoff);
                     System.out.println("Blackjack.");
                 }
                 case PLAYER_WIN, DEALER_BUST -> {
-                    deltaGold = bet; // net profit is +bet, plus their stake effectively returns as we just net in gold terms
+                    deltaGold = bet;
                     System.out.println(outcome == Outcome.DEALER_BUST ? "Dealer busts." : "You win.");
                 }
                 case PUSH -> {
@@ -182,10 +181,8 @@ public class Casino {
                 }
             }
 
-            // Print current state
             System.out.println("Gold now: " + player.getGold() + " | Debt now: " + player.getCasinoDebt());
 
-            // Kickout conditions
             if (wentIntoDebtThisHandFromClean && startingDebt == 0 && player.getCasinoDebt() > 0) {
                 System.out.println();
                 System.out.println("The hostess' smile doesn't change, but the tone does.");
@@ -207,9 +204,6 @@ public class Casino {
         int best = dealer.bestValue();
         if (best < 17) return true;
         if (best > 17) return false;
-
-        // best == 17: hit only if it's a "soft 17". But rules: dealer stands on soft 17.
-        // Therefore always false here.
         return false;
     }
 
@@ -233,8 +227,6 @@ public class Casino {
         catch (Exception e) { return -1; }
     }
 
-    // ---------- Cards ----------
-
     private static class Deck {
         private final List<Card> cards = new ArrayList<>();
         private int idx = 0;
@@ -250,7 +242,6 @@ public class Casino {
 
         Card draw() {
             if (idx >= cards.size()) {
-                // shouldn't happen due to refresh, but safe anyway
                 Collections.shuffle(cards, new Random());
                 idx = 0;
             }
@@ -323,7 +314,6 @@ public class Casino {
                 total += c.value();
                 if (c.rank == Rank.ACE) aces++;
             }
-            // downgrade aces from 11 to 1 as needed
             while (total > 21 && aces > 0) {
                 total -= 10;
                 aces--;

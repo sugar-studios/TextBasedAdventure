@@ -71,6 +71,7 @@ public class PlayerClass extends Entity {
         addSpecial(new BlockSpecial());
     }
 
+    // I think there is probably a better way I could've done this as items dont need to track their own stats, so an object is probably too much memeory
     private void initializeInventory() {
         addConsumable(new ItemLesserHealing(), 5);
         addConsumable(new ItemLesserMana(), 2);

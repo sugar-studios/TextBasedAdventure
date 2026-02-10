@@ -1,3 +1,11 @@
+/*
+
+The naming I used in this file should make it pretty self explanatory... the abstract class should tell you everything you need to know
+
+*/
+
+
+
 import java.util.Objects;
 
 enum Rarity {

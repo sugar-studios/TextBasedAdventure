@@ -1,3 +1,14 @@
+/*
+Basically defines an interface of the attack's name, desc, range, if it can be used and its effect
+
+the fisrt four are kinda just... tests?
+
+the rest are kinda self explanatory, mostly is the interface below that tells you everythin gyou need to know
+*/
+
+
+
+
 interface Attack {
     String getName();
     String getDescription();

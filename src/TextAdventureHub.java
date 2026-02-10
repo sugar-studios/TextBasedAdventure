@@ -43,7 +43,6 @@ public class TextAdventureHub {
     }
 
     private static void playMenuClick() {
-        // click1.wav ... click7.wav
         int n = 1 + RNG.nextInt(7);
         Audio.playSfx("click" + n + ".wav", -10.0f);
     }
@@ -89,8 +88,7 @@ public class TextAdventureHub {
         System.out.println("If you want to chat with the staff, type 'talk' inside that location.");
     }
 
-    // ---------------- Casino ----------------
-
+    //Casino
     private static void casinoLoop(PlayerClass player, Scanner in) {
         Audio.stopMusic();
         Audio.playMusicLoop("shopCasino.wav", -12.0f);
@@ -127,8 +125,7 @@ public class TextAdventureHub {
         System.out.println("If you go into debt, the casino keeps track.");
     }
 
-    // ---------------- Shop ----------------
-
+    //Shop
     private static void shopLoop(PlayerClass player, Scanner in) {
         Audio.stopMusic();
         Audio.playMusicLoop("shopGeneral.wav", -12.0f);
@@ -162,8 +159,7 @@ public class TextAdventureHub {
         System.out.println("This is a shop: you trade gold for consumables and ammo.");
     }
 
-    // ---------------- Armory ----------------
-
+    //Armory
     private static void armoryLoop(PlayerClass player, Scanner in) {
         Audio.stopMusic();
         Audio.playMusicLoop("shopBlack.wav", -12.0f);
@@ -197,8 +193,7 @@ public class TextAdventureHub {
         System.out.println("Armory: weapons, replacements, upgrades, arrow replenishment.");
     }
 
-    // ---------------- Bank ----------------
-
+    //Bank
     private static void bankLoop(PlayerClass player, Scanner in) {
         Audio.stopMusic();
         Audio.playMusicLoop("shopBank.wav", -12.0f);
@@ -235,8 +230,7 @@ public class TextAdventureHub {
         System.out.println("After stage 11, you must earn gold before repayment unlocks.");
     }
 
-    // ---------------- Hospital ----------------
-
+    //Hospital
     private static void hospitalLoop(PlayerClass player, Scanner in) {
         Audio.stopMusic();
         Audio.playMusicLoop("shopHospital.wav", -12.0f);
@@ -294,8 +288,7 @@ public class TextAdventureHub {
         System.out.println("Health restored to full.");
     }
 
-    // ---------------- Outside ----------------
-
+    //fights
     private static void forestVenture(PlayerClass player, Scanner in) {
         System.out.println();
         showArt(5);
