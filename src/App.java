@@ -43,7 +43,7 @@ import java.util.Scanner;
 public class App {
     public static PlayerClass player;
     public static Scanner in;
-    private static final boolean FORCE_SADAKO = false;
+    private static final boolean FORCE_SADAKO = true;
     private static final Random RNG = new Random();
 
     // This code here was made by AI
